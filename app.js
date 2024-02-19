@@ -1,20 +1,15 @@
 const express = require("express");
 const app = express();
-const { getTopics, getAPI } = require("./controllers/controller");
-
-const {
-  handleCustomErrors,
-  handlePSQLErrors,
-  handleServerErrors,
-} = require("./errors");
+const { getTopics, getAPI, getArticleById } = require("./controllers/controller");
+const { handleCustomErrors, handlePSQLErrors } = require("./errors");
 
 app.use(express.json());
 
 app.get("/api/topics", getTopics);
 app.get("/api", getAPI);
+app.get("/api/articles/:article_id", getArticleById);
 
-app.use(handlePSQLErrors);
 app.use(handleCustomErrors);
-app.use(handleServerErrors);
+app.use(handlePSQLErrors);
 
 module.exports = app;
