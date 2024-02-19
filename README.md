@@ -1,5 +1,3 @@
-# Northcoders News API
-
 # NC Backend Project #
 
 Welcome to the documentation for the Northcoders News API!
@@ -24,13 +22,13 @@ PostgreSQL
 `git clone https://github.com/heniscoding/be-nc-news`
 `cd your-repo`
 
-### Installing Dependaencies ###
+## Installing Dependaencies ##
 
 Run the following command to install project dependencies:
 
 `npm install`
 
-### Setting Up Environment Variables ###
+## Setting Up Environment Variables ##
 
 This project uses environment variables to configure database connections. Follow these steps to set up the necessary environment variable files:
 
@@ -46,7 +44,7 @@ Database Configuration for test. Copy the following into your .env file
 
 `PGDATABASE=database_name_test`
 
-### Running Scripts ###
+## Running Scripts ##
 
 The project includes the following npm scripts:
 
