@@ -4,6 +4,8 @@ const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const testData = require("../db/data/test-data/index");
 const endpoints = require("../endpoints.json");
+const format = require("pg-format");
+const sorted = require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -79,6 +81,37 @@ describe("getArticleByID", () => {
       .expect(400)
       .then((res) => {
         expect(res.body.error).toBe("Bad request");
+      });
+  });
+});
+
+describe("getArticles", () => {
+  it("should return status 200 and the correct object", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        const { articles } = res.body;
+        articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("string");
+        });
+      });
+  });
+  it("should return status 200 with the correct length and order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((res) => {
+        const { articles } = res.body;
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });
