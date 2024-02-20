@@ -3,6 +3,7 @@ const {
   selectArticleById,
   getAllArticles,
   getCommentsByArticleId,
+  postNewComment
 } = require("../models/models");
 const endpoints = require("../endpoints.json");
 
@@ -51,3 +52,15 @@ exports.getCommentsById = (req, res, next) => {
       next(err);
     });
 };
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  postNewComment(article_id, username, body)
+  .then((comment) => {
+    res.status(201).send({ comment });
+  })
+  .catch((err) => {
+    next(err);
+  })
+}

@@ -170,3 +170,59 @@ describe("getCommentsById", () => {
       });
   });
 });
+
+describe("postComments", () => {
+  it("POST:201 inserts a new comment and responds with the posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "New comment",
+    };
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send(newComment)
+      .expect(201)
+      .then((response) => {
+        expect(response.body.comment).toMatchObject({
+          comment_id: 19,
+          author: "butter_bridge",
+          article_id: 5,
+          body: "New comment",
+        });
+      });
+  });
+  it("POST:400 responds with an appropriate status and error message when provided an input with no username", () => {
+    return request(app)
+      .post("/api/articles/5/comments")
+      .send({
+        body: "New comment",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad request");
+      });
+  });
+  it("POST:404 responds with an appropriate status and error message when non-existent article_id is passed", () => {
+    return request(app)
+      .post("/api/articles/152/comments")
+      .send({
+        username: "butter_bridge",
+        body: "New comment",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Not found");
+      });
+  });
+  it("POST:404 responds with appropriate error message and status when a non-existent username is passed.", () => {
+    return request(app)
+      .post("/api/articles/152/comments")
+      .send({
+        username: "butter_bri3dge",
+        body: "New comment",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Not found");
+      });
+  });
+});
