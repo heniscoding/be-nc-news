@@ -86,12 +86,13 @@ describe("getArticleByID", () => {
 });
 
 describe("getArticles", () => {
-  it("should return status 200 and the correct object", () => {
+  it("should return status 200 and the correct object with the correct length", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
+        expect(articles).toHaveLength(13);
         articles.forEach((article) => {
           expect(typeof article.author).toBe("string");
           expect(typeof article.title).toBe("string");
@@ -104,14 +105,68 @@ describe("getArticles", () => {
         });
       });
   });
-  it("should return status 200 with the correct length and order", () => {
+  it("should return status 200 with articles in the correct order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then((res) => {
         const { articles } = res.body;
-        expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+describe("getCommentsById", () => {
+  it("should return all comments based on the article Id with a status 200 code", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((res) => {
+        const { comments } = res.body;
+        expect(comments).toHaveLength(11);
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  it("should return a 404 when passed an article id that does not exist", () => {
+    return request(app)
+      .get("/api/articles/999/comments")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.error).toBe("Not found");
+      });
+  });
+  it("should return 400 when passed an invalid type of article id", () => {
+    return request(app)
+      .get("/api/articles/dog/comments")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.error).toBe("Bad request");
+      });
+  });
+  it("should return object in correct order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .then((res) => {
+        const { comments } = res.body;
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  it("should return 200 and an empty array when passed an article_id that exists, but has no comments", () => {
+    return request(app)
+      .get("/api/articles/4/comments")
+      .expect(200)
+      .then((res) => {
+        const { comments } = res.body;
+        expect(comments).toHaveLength(0);
+        expect(comments).toEqual([]);
       });
   });
 });
