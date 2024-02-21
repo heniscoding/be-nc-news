@@ -3,7 +3,8 @@ const {
   selectArticleById,
   getAllArticles,
   getCommentsByArticleId,
-  postNewComment
+  postNewComment,
+  updateArticleVotesById
 } = require("../models/models");
 const endpoints = require("../endpoints.json");
 
@@ -59,6 +60,19 @@ exports.postComment = (req, res, next) => {
   postNewComment(article_id, username, body)
   .then((comment) => {
     res.status(201).send({ comment });
+  })
+  .catch((err) => {
+    next(err);
+  })
+}
+
+exports.updateArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  // console.log(article_id, inc_votes);
+  updateArticleVotesById(article_id, inc_votes)
+  .then((article) => {
+    res.status(200).send({ article });
   })
   .catch((err) => {
     next(err);
