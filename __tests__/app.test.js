@@ -226,3 +226,111 @@ describe("postComments", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id", () => {
+  it("Should correctly update article when passed a positive integer", () => {
+    return request(app)
+      .patch("/api/articles/5/")
+      .send({ inc_votes: 2 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 5,
+          title: expect.any(String),
+          body: expect.any(String),
+          votes: 2,
+          topic: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("Should correctly update specified article when passed negative integer", () => {
+    return request(app)
+      .patch("/api/articles/1/")
+      .send({ inc_votes: -50 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 1,
+          title: expect.any(String),
+          body: expect.any(String),
+          votes: 50,
+          topic: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("Should correctly update specified article when passed negative integer", () => {
+    return request(app)
+      .patch("/api/articles/5/")
+      .send({ inc_votes: 0 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 5,
+          title: expect.any(String),
+          body: expect.any(String),
+          votes: 0,
+          topic: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+        });
+      });
+  });
+  it("Should return 400 when no inc_votes is passed.", () => {
+    return request(app)
+      .patch("/api/articles/5/")
+      .send()
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad request");
+      });
+  });
+  it("Should return 200 and ignore extra properties in the request body", () => {
+    return request(app)
+      .patch("/api/articles/5/")
+      .send({ inc_votes: 1, extra_prop: "who dis" })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 5,
+          title: expect.any(String),
+          body: expect.any(String),
+          votes: expect.any(Number),
+          topic: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+        });
+        expect(response.body.article).not.toHaveProperty("extra_prop");
+      });
+  });
+  it("should return a 404 when passed an article id that does not exist", () => {
+    return request(app)
+      .patch("/api/articles/15")
+      .expect(404)
+      .send({ inc_votes: 2 })
+      .then((res) => {
+        expect(res.body.error).toBe("Not found");
+      });
+  });
+  it("should return a 400 when passed invalid vote value", () => {
+    return request(app)
+      .patch("/api/articles/5/")
+      .send({ inc_votes: "chainsaw" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad request");
+      });
+  });
+  it("should return a 400 when passed invalid article_id value", () => {
+    return request(app)
+      .patch("/api/articles/foo/")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.error).toBe("Bad request");
+      });
+  });
+});
