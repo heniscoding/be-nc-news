@@ -334,3 +334,29 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+describe("deleteComment", () => {
+  it("should return a 204 and an empty body", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .expect((res) => {
+        expect(res.body).toEqual({});
+      });
+  });
+  it("should return 404 when passed a comment_id that does not exist", () => {
+    return request(app)
+      .delete("/api/comments/999")
+      .expect(404)
+      .then((res) => {
+        expect(res.body.error).toBe("Not found");
+      });
+  });
+  it("should return 400 when passed invalid id", () => {
+    return request(app)
+      .delete("/api/comments/dog")
+      .expect(400)
+      .then((res) => {
+        expect(res.body.error).toBe("Bad request");
+      });
+  });
+});
