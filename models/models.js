@@ -18,31 +18,61 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.getAllArticles = () => {
+exports.getAllArticles = (topic) => {
+  if (topic) {
+    return db
+      .query("SELECT * FROM topics WHERE slug = $1", [topic])
+      .then((data) => {
+        if (data.rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "Not found" });
+        } else {
+          return fetchArticles(topic);
+        }
+      });
+  } else {
+    return fetchArticles();
+  }
+};
+
+const fetchArticles = (topic) => {
+  let dbQuery = `
+    SELECT 
+    articles.author, 
+    articles.title, 
+    articles.article_id, 
+    articles.topic, 
+    articles.created_at, 
+    articles.votes, 
+    articles.article_img_url, 
+    COUNT(comments.comment_id) AS comment_count 
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id`;
+
+  let params = [];
+
+  if (topic) {
+    dbQuery += " WHERE articles.topic = $1";
+    params.push(topic);
+  }
+
+  dbQuery += `
+    GROUP BY 
+    articles.author, 
+    articles.title, 
+    articles.article_id, 
+    articles.topic, 
+    articles.created_at, 
+    articles.votes, 
+    articles.article_img_url
+    ORDER BY created_at DESC;`;
+
   return db
-    .query(
-      `
-  SELECT 
-  articles.author,
-  articles.title,
-  articles.article_id,
-  articles.topic,
-  articles.created_at,
-  articles.votes,
-  articles.article_img_url,
-  COUNT(comments.comment_id) AS comment_count
-FROM 
-  articles
-LEFT JOIN 
-  comments ON articles.article_id = comments.article_id
-GROUP BY 
-  articles.article_id
-ORDER BY 
-  articles.created_at DESC;`
-    )
-    .then((result) => {
-      const articles = result.rows;
-      return articles;
+    .query(dbQuery, params)
+    .then((data) => {
+      return data.rows;
+    })
+    .catch((err) => {
+      throw err;
     });
 };
 
@@ -123,7 +153,9 @@ exports.deleteComment = (comment_id) => {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
       return db
-        .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [comment_id])
+        .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [
+          comment_id,
+        ])
         .then((data) => {
           if (!data.rows.length) {
             return Promise.reject({ status: 404, msg: "Not found" });
@@ -134,8 +166,7 @@ exports.deleteComment = (comment_id) => {
 };
 
 exports.getAllUsers = () => {
-  return db.query(`SELECT * FROM users;`)
-  .then((data) => {
+  return db.query(`SELECT * FROM users;`).then((data) => {
     return data.rows;
-  })
-}
+  });
+};

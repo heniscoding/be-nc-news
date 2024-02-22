@@ -115,6 +115,37 @@ describe("getArticles", () => {
       });
   });
 });
+it('should return correct object when passed "topic" as a query and status 200', () => {
+  return request(app)
+  .get("/api/articles?topic=mitch")
+  .expect(200)
+  .then((res) => {
+  
+    const { articles } = res.body;
+    expect(articles).toHaveLength(12);
+    articles.forEach((article) => {
+      expect(article.topic).toBe("mitch");
+    });
+  })
+});
+it('should return status 200 plus empty array when topic exists but isn\'t present in articles table', () => {
+  return request(app)
+  .get("/api/articles?topic=paper")
+  .expect(200)
+  .then((res) => {
+    const { articles } = res.body;
+    expect(articles).toHaveLength(0);
+    expect(articles).toEqual([]);
+  })
+});
+it('should return status 404 when topic does not exist in articles table', () => {
+  return request(app)
+  .get("/api/articles?topic=mining")
+  .expect(404)
+  .then((res) => {
+    expect(res.body.error).toBe("Not found");
+  })
+});
 describe("getCommentsById", () => {
   it("should return all comments based on the article Id with a status 200 code", () => {
     return request(app)
