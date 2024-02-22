@@ -7,13 +7,22 @@ exports.getAllTopics = () => {
 };
 
 exports.selectArticleById = (article_id) => {
+  if (isNaN(article_id)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
-    .then((result) => {
-      if (result.rows.length === 0) {
+    .query(
+      `SELECT articles.*, COUNT(comments.comment_id)::INT AS comment_count FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+      WHERE articles.article_id = $1
+      GROUP BY articles.article_id;`,
+      [article_id]
+    )
+    .then((data) => {
+      if (!data.rows.length || data.rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
-      const article = result.rows[0];
+      const article = data.rows[0];
       return article;
     });
 };
