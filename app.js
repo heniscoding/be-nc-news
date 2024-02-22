@@ -8,7 +8,8 @@ const {
   getCommentsById,
   postComment,
   updateArticleById,
-  deleteCommentById
+  deleteCommentById,
+  getUsers
 } = require("./controllers/controller");
 const {
   handleCustomErrors,
@@ -25,7 +26,8 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getCommentsById);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", updateArticleById);
-app.delete("/api/comments/:comment_id", deleteCommentById)
+app.delete("/api/comments/:comment_id", deleteCommentById);
+app.get("/api/users", getUsers);
 
 app.use(handleCustomErrors);
 app.use(handlePSQLErrors);

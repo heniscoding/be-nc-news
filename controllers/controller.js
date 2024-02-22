@@ -5,7 +5,8 @@ const {
   getCommentsByArticleId,
   postNewComment,
   updateArticleVotesById,
-  deleteComment
+  deleteComment,
+  getAllUsers
 } = require("../models/models");
 const endpoints = require("../endpoints.json");
 
@@ -82,10 +83,20 @@ exports.updateArticleById = (req, res, next) => {
 exports.deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
   deleteComment(comment_id)
-  .then((comment) => {
-    res.status(204).send({ comment });
+  .then(() => {
+    res.sendStatus(204);
   })
   .catch((err) => {
     next(err);
+  })
+}
+
+exports.getUsers = (req, res, next) => {
+  getAllUsers()
+  .then((users) => {
+    res.status(200).send({ users });
+  })
+  .catch((err) => {
+    next(err)
   })
 }
