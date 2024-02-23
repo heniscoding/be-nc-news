@@ -6,6 +6,8 @@ We will be building an API for the purpose of accessing application data program
 
 Below, you'll find instructions on setting up environment variables, creating databases, and familiarizing yourself with the project structure.
 
+You can find the hosted version of this project here - https://be-nc-news-yvgn.onrender.com/
+
 
 ## Getting Started ##
 
