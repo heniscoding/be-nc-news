@@ -61,3 +61,6 @@ To seed the database run and test the development environment:
 To test the app
 
 `npm run test`
+
+## Version requirements ## 
+Node.js : v21.6.1 PostgreSQL: v14.10
