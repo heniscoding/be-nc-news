@@ -84,25 +84,26 @@ describe("getArticleByID", () => {
         expect(res.body.error).toBe("Bad request");
       });
   });
-  it('should return correct article with correct comment count', () => {
+  it("should return correct article with correct comment count", () => {
     return request(app)
-    .get("/api/articles/1")
-    .expect(200)
-    .then((res) => {
-      const { article } = res.body;
-      const expectedArticle = {
-        article_id: 1,
-        title: "Living in the shadow of a great man",
-        body: "I find this existence challenging",
-        votes: 100,
-        topic: "mitch",
-        author: "butter_bridge",
-        created_at: "2020-07-09T20:11:00.000Z",
-        article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        comment_count: 11
-      };
-      expect(article).toMatchObject(expectedArticle);
-    })
+      .get("/api/articles/1")
+      .expect(200)
+      .then((res) => {
+        const { article } = res.body;
+        const expectedArticle = {
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          body: "I find this existence challenging",
+          votes: 100,
+          topic: "mitch",
+          author: "butter_bridge",
+          created_at: "2020-07-09T20:11:00.000Z",
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 11,
+        };
+        expect(article).toMatchObject(expectedArticle);
+      });
   });
 });
 
@@ -138,33 +139,33 @@ describe("getArticles", () => {
 });
 it('should return correct object when passed "topic" as a query and status 200', () => {
   return request(app)
-  .get("/api/articles?topic=mitch")
-  .expect(200)
-  .then((res) => {
-    const { articles } = res.body;
-    expect(articles).toHaveLength(12);
-    articles.forEach((article) => {
-      expect(article.topic).toBe("mitch");
+    .get("/api/articles?topic=mitch")
+    .expect(200)
+    .then((res) => {
+      const { articles } = res.body;
+      expect(articles).toHaveLength(12);
+      articles.forEach((article) => {
+        expect(article.topic).toBe("mitch");
+      });
     });
-  })
 });
-it('should return status 200 plus empty array when topic exists but isn\'t present in articles table', () => {
+it("should return status 200 plus empty array when topic exists but isn't present in articles table", () => {
   return request(app)
-  .get("/api/articles?topic=paper")
-  .expect(200)
-  .then((res) => {
-    const { articles } = res.body;
-    expect(articles).toHaveLength(0);
-    expect(articles).toEqual([]);
-  })
+    .get("/api/articles?topic=paper")
+    .expect(200)
+    .then((res) => {
+      const { articles } = res.body;
+      expect(articles).toHaveLength(0);
+      expect(articles).toEqual([]);
+    });
 });
-it('should return status 404 when topic does not exist in articles table', () => {
+it("should return status 404 when topic does not exist in articles table", () => {
   return request(app)
-  .get("/api/articles?topic=mining")
-  .expect(404)
-  .then((res) => {
-    expect(res.body.error).toBe("Not found");
-  })
+    .get("/api/articles?topic=mining")
+    .expect(404)
+    .then((res) => {
+      expect(res.body.error).toBe("Not found");
+    });
 });
 describe("getCommentsById", () => {
   it("should return all comments based on the article Id with a status 200 code", () => {
@@ -387,9 +388,7 @@ describe("/api/articles/:article_id", () => {
 });
 describe("deleteComment", () => {
   it("should return a 204 and an empty body", () => {
-    return request(app)
-      .delete("/api/comments/1")
-      .expect(204);
+    return request(app).delete("/api/comments/1").expect(204);
   });
   it("should return 404 when passed a comment_id that does not exist", () => {
     return request(app)
